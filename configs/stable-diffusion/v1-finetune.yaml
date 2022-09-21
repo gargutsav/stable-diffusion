@@ -1,5 +1,5 @@
 model:
-  base_learning_rate: 5.0e-05
+  base_learning_rate: 1.0e-07
   target: ldm.models.diffusion.ddpm.LatentDiffusion
   params:
     linear_start: 0.00085
@@ -74,7 +74,7 @@ data:
   target: main.DataModuleFromConfig
   params:
     batch_size: 8
-    num_workers: 2
+    num_workers: 4
     wrap: false
     train:
       target: ldm.data.lgs.LGS
