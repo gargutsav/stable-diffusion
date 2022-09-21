@@ -4,6 +4,7 @@ import time
 import torch
 import torchvision
 import pytorch_lightning as pl
+import warnings
 
 from packaging import version
 from omegaconf import OmegaConf
@@ -12,6 +13,7 @@ from functools import partial
 from PIL import Image
 
 from pytorch_lightning import seed_everything
+from pytorch_lightning.plugins import DDPPlugin
 from pytorch_lightning.trainer import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint, Callback, LearningRateMonitor
 from pytorch_lightning.utilities.distributed import rank_zero_only
@@ -19,6 +21,8 @@ from pytorch_lightning.utilities import rank_zero_info
 
 from ldm.data.base import Txt2ImgIterableBaseDataset
 from ldm.util import instantiate_from_config
+
+warnings.filterwarnings("ignore") 
 
 
 def get_parser(**parser_kwargs):
@@ -288,7 +292,7 @@ class SetupCallback(Callback):
 
 class ImageLogger(Callback):
     def __init__(self, batch_frequency, max_images, clamp=True, increase_log_steps=True,
-                 rescale=True, disabled=False, log_on_batch_idx=False, log_first_step=False,
+                 rescale=True, disabled=False, log_on_batch_idx=True, log_first_step=False,
                  log_images_kwargs=None):
         super().__init__()
         self.rescale = rescale
@@ -655,6 +659,7 @@ if __name__ == "__main__":
             del callbacks_cfg['ignore_keys_callback']
 
         trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
+        trainer_kwargs['plugins'] = DDPPlugin(find_unused_parameters=False)
 
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
         trainer.logdir = logdir  ###

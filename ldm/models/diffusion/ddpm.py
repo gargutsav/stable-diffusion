@@ -196,10 +196,10 @@ class DDPM(pl.LightningModule):
         missing, unexpected = self.load_state_dict(sd, strict=False) if not only_model else self.model.load_state_dict(
             sd, strict=False)
         print(f"Restored from {path} with {len(missing)} missing and {len(unexpected)} unexpected keys")
-        if len(missing) > 0:
-            print(f"Missing Keys: {missing}")
-        if len(unexpected) > 0:
-            print(f"Unexpected Keys: {unexpected}")
+        # if len(missing) > 0:
+        #     print(f"Missing Keys: {missing}")
+        # if len(unexpected) > 0:
+        #     print(f"Unexpected Keys: {unexpected}")
 
     def q_mean_variance(self, x_start, t):
         """
@@ -1253,7 +1253,6 @@ class LatentDiffusion(DDPM):
                    plot_diffusion_rows=True, **kwargs):
 
         use_ddim = ddim_steps is not None
-
         log = dict()
         z, c, x, xrec, xc = self.get_input(batch, self.first_stage_key,
                                            return_first_stage_outputs=True,
